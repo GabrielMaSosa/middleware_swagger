@@ -73,6 +73,15 @@ func (h *HandlerProduct) PartialSave() gin.HandlerFunc {
 	}
 }
 
+// ListProducts godoc
+// @Summary Listar los productos
+// @Tags Products
+// @Description Obtienes un slice de productos
+// @Produce  json
+// @Param token header string true "token"
+// @Success 200 {object} []domain.Product
+// @Failure 404 {object} string
+// @Router /products [get]
 func (h *HandlerProduct) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
