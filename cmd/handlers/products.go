@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/GabrielMaSosa/middleware-swagger/internal/domain"
@@ -41,10 +40,6 @@ var (
 func (h *HandlerProduct) PartialSave() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		if mitoken := ctx.GetHeader("token"); mitoken != os.Getenv("TOKEN") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"msg": "Unauthorize"})
-			return
-		}
 		id := ctx.Param("id")
 		idn, err := strconv.Atoi(id)
 		if err != nil {
@@ -80,10 +75,7 @@ func (h *HandlerProduct) PartialSave() gin.HandlerFunc {
 
 func (h *HandlerProduct) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if mitoken := ctx.GetHeader("token"); mitoken != os.Getenv("TOKEN") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"msg": "Unauthorize"})
-			return
-		}
+
 		dta, err := h.service.ServiceGetAll()
 		if err != nil {
 			ctx.String(http.StatusNotFound, ErrNotFound.Error())
@@ -96,10 +88,7 @@ func (h *HandlerProduct) GetAll() gin.HandlerFunc {
 
 func (h *HandlerProduct) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if mitoken := ctx.GetHeader("token"); mitoken != os.Getenv("TOKEN") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"msg": "Unauthorize"})
-			return
-		}
+
 		var datain domain.Product
 
 		id := ctx.Param("id")
@@ -133,10 +122,7 @@ func (h *HandlerProduct) Update() gin.HandlerFunc {
 
 func (h *HandlerProduct) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if mitoken := ctx.GetHeader("token"); mitoken != os.Getenv("TOKEN") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"msg": "Unauthorize"})
-			return
-		}
+
 		id := ctx.Param("id")
 		idn, err := strconv.Atoi(id)
 		if err != nil {
@@ -162,10 +148,7 @@ func (h *HandlerProduct) Delete() gin.HandlerFunc {
 // GetProduct traer un producto por id
 func (h *HandlerProduct) GetProductByIdPatch() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if mitoken := ctx.GetHeader("token"); mitoken != os.Getenv("TOKEN") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"msg": "Unauthorize"})
-			return
-		}
+
 		id := ctx.Param("id")
 		idn, err := strconv.Atoi(id)
 		if err != nil {
@@ -191,10 +174,7 @@ func (h *HandlerProduct) GetProductByIdPatch() gin.HandlerFunc {
 // SearchProduct traer un producto por nombre o categoria
 func (h *HandlerProduct) SearchProduct() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if mitoken := ctx.GetHeader("token"); mitoken != os.Getenv("TOKEN") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"msg": "Unauthorize"})
-			return
-		}
+
 		query := ctx.Query("priceGt")
 		priceGt, err := strconv.ParseFloat(query, 32)
 		if err != nil {
@@ -215,10 +195,6 @@ func (h *HandlerProduct) SearchProduct() gin.HandlerFunc {
 func (h *HandlerProduct) Save() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		if mitoken := ctx.GetHeader("token"); mitoken != os.Getenv("TOKEN") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"msg": "Unauthorize"})
-			return
-		}
 		dta := domain.Product{}
 		if err := ctx.ShouldBindJSON(&dta); err != nil {
 
