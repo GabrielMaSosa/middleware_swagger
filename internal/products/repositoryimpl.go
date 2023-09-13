@@ -56,7 +56,7 @@ func (r *RepositoryImpl) Update(id int, data domain.Product) (ret *domain.Produc
 
 	if flag == false {
 		//el item no esta enonces debemos agregarlo
-
+		data.ID = Returnindice(dbdata)
 		dbdata = append(dbdata, data)
 		store.WriteAll("../products.json", dbdata)
 		err = nil
@@ -245,11 +245,10 @@ func (r *RepositoryImpl) GetById(id int) (ret *domain.Product, err error) {
 func (r *RepositoryImpl) SaveNewProduct(data domain.Product) (ret *domain.Product, err error) {
 
 	dbdata, _ := store.ReadAll("../products.json")
-	indi_candidate := len(dbdata) + 1
+	indi_candidate := Returnindice(dbdata)
+
 	for _, v := range dbdata {
-		if indi_candidate == v.ID {
-			indi_candidate++
-		}
+
 		if data.Code_value == v.Code_value {
 			err = errors.New("code value repeat")
 			return
@@ -263,4 +262,16 @@ func (r *RepositoryImpl) SaveNewProduct(data domain.Product) (ret *domain.Produc
 	store.WriteAll("../products.json", dbdata)
 
 	return
+}
+
+func Returnindice(dta []domain.Product) (indi_candidate int) {
+
+	indi_candidate = len(dta) + 1
+	for _, v := range dta {
+		if indi_candidate == v.ID {
+			indi_candidate++
+		}
+	}
+	return
+
 }
