@@ -160,6 +160,7 @@ func TestFuncionalHandlerProductGetByID(t *testing.T) {
 
 	})
 
+	//falta correr el resto de los casos con errores
 	t.Run("One error id negative get by id", func(t *testing.T) {
 		//arrange
 		//levanto servrer
