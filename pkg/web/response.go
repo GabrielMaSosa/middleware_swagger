@@ -1,9 +1,13 @@
 package web
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type ResponsError struct {
-	Status  int    `json:"status,omitempty"`
+	Status  string `json:"status,omitempty"`
 	Code    int    `json:"code,omitempty"`
 	Message string `json:"message,omitempty"`
 }
@@ -13,6 +17,12 @@ type Response struct {
 }
 
 func RequestError(ct *gin.Context, msg string, code int) {
+	out := ResponsError{
+		Status:  http.StatusText(code),
+		Code:    code,
+		Message: msg,
+	}
+	ct.JSON(code, out)
 
 }
 

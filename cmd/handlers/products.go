@@ -8,6 +8,7 @@ import (
 
 	"github.com/GabrielMaSosa/middleware-swagger/internal/domain"
 	product "github.com/GabrielMaSosa/middleware-swagger/internal/products"
+	"github.com/GabrielMaSosa/middleware-swagger/pkg/web"
 	"github.com/gin-gonic/gin"
 )
 
@@ -43,31 +44,32 @@ func (h *HandlerProduct) PartialSave() gin.HandlerFunc {
 		id := ctx.Param("id")
 		idn, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request1"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 		if idn <= 0 {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request2"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 
 		dta := map[string]interface{}{}
 		if err := ctx.ShouldBindJSON(&dta); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+			web.RequestError(ctx, err.Error(), http.StatusBadRequest)
 			return
 		}
 		if err2 := ValidateRequest(dta); err2 != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"msg": err2.Error()})
+			web.RequestError(ctx, err2.Error(), http.StatusBadRequest)
 			fmt.Println(err2)
 			return
 		}
 
 		dta1, err5 := h.service.UpdatePartial(idn, dta)
 		if err5 != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"msg": "Error internal"})
+			web.RequestError(ctx, err5.Error(), http.StatusInternalServerError)
 			return
 		} else {
-			ctx.JSON(http.StatusOK, dta1)
+			web.Requestok(ctx, 200, dta1)
+			return
 		}
 
 	}
@@ -87,10 +89,10 @@ func (h *HandlerProduct) GetAll() gin.HandlerFunc {
 
 		dta, err := h.service.ServiceGetAll()
 		if err != nil {
-			ctx.String(http.StatusNotFound, ErrNotFound.Error())
+			web.RequestError(ctx, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		ctx.JSON(http.StatusOK, dta)
+		web.Requestok(ctx, 200, dta)
 		return
 	}
 }
@@ -103,25 +105,25 @@ func (h *HandlerProduct) Update() gin.HandlerFunc {
 		id := ctx.Param("id")
 		idn, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request1"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 		if idn <= 0 {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request2"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 		if err2 := ctx.ShouldBindJSON(&datain); err2 != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request3"})
+			web.RequestError(ctx, err2.Error(), http.StatusBadRequest)
 			return
 
 		}
 		if err3 := ValidateData(datain); err3 != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request4"})
+			web.RequestError(ctx, err3.Error(), http.StatusBadRequest)
 			return
 		}
 		val2, err5 := h.service.UpdateItem(idn, datain)
 		if err5 != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"msg": "internal error"})
+			web.RequestError(ctx, err5.Error(), http.StatusInternalServerError)
 			return
 		}
 		ctx.JSON(http.StatusOK, val2)
@@ -135,20 +137,20 @@ func (h *HandlerProduct) Delete() gin.HandlerFunc {
 		id := ctx.Param("id")
 		idn, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request1"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 		if idn <= 0 {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request2"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 
 		_, err5 := h.service.Delete(idn)
 		if err5 != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"msg": "internal error"})
+			web.RequestError(ctx, err5.Error(), http.StatusNotFound)
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"msg": "Succesful delete"})
+		web.Requestok(ctx, 200, "Delete")
 		return
 	}
 
@@ -161,21 +163,21 @@ func (h *HandlerProduct) GetProductByIdPatch() gin.HandlerFunc {
 		id := ctx.Param("id")
 		idn, err := strconv.Atoi(id)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request1"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 		if idn <= 0 {
-			ctx.JSON(http.StatusBadRequest, gin.H{"mesage": "Bad request2"})
+			web.RequestError(ctx, ErrAtributenovalid.Error(), http.StatusBadRequest)
 			return
 		}
 
 		valore, err := h.service.ServiGetById(idn)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			web.RequestError(ctx, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		ctx.JSON(200, valore)
+		web.Requestok(ctx, 200, valore)
 		return
 	}
 }
@@ -187,16 +189,17 @@ func (h *HandlerProduct) SearchProduct() gin.HandlerFunc {
 		query := ctx.Query("priceGt")
 		priceGt, err := strconv.ParseFloat(query, 32)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid price"})
+
+			web.RequestError(ctx, ErrparamPrice.Error(), http.StatusBadRequest)
 			return
 		}
 		valore, err := h.service.ServiGetPriceMayor(priceGt)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+			web.RequestError(ctx, fmt.Sprintf("%g", priceGt), http.StatusNotFound)
 			return
 		}
 
-		ctx.JSON(200, valore)
+		web.Requestok(ctx, 200, valore)
 		return
 	}
 }
@@ -207,36 +210,36 @@ func (h *HandlerProduct) Save() gin.HandlerFunc {
 		dta := domain.Product{}
 		if err := ctx.ShouldBindJSON(&dta); err != nil {
 
-			ctx.JSON(http.StatusBadRequest, dta)
+			web.RequestError(ctx, err.Error(), http.StatusBadRequest)
 
 			return
 		}
 
-		if _, err := ValidateEmpty(&dta); err != nil {
+		if _, err1 := ValidateEmpty(&dta); err1 != nil {
 
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			web.RequestError(ctx, err1.Error(), http.StatusBadRequest)
 			return
 		}
 
-		if err := ValidateCodeValue(&dta); err != nil {
+		if err2 := ValidateCodeValue(&dta); err2 != nil {
 
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			web.RequestError(ctx, err2.Error(), http.StatusBadRequest)
 			return
 
 		}
-		if err := ValidateDate(&dta); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err3 := ValidateDate(&dta); err3 != nil {
+			web.RequestError(ctx, err3.Error(), http.StatusBadRequest)
 			return
 
 		}
 		//esto hago para agregar a mi db simulada
 		valxx, errxx := h.service.ServiNewItem(dta)
 		if errxx != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
+			web.RequestError(ctx, errxx.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		ctx.JSON(201, valxx)
+		web.Requestok(ctx, 200, valxx)
 		return
 	}
 }

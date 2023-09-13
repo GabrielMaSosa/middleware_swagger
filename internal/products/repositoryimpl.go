@@ -93,8 +93,8 @@ func (r *RepositoryImpl) Delete(id int) (ret *domain.Product, err error) {
 			flag = true
 		}
 	}
-	if flag {
-		err = nil
+	if flag == false {
+		err = ErrInternalDataNotFound
 	}
 
 	return

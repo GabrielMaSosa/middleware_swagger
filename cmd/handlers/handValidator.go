@@ -11,19 +11,20 @@ import (
 )
 
 var (
-	ErrCodeValue1    = errors.New("error Codevalue empty")
-	ErrQuantity      = errors.New("error Quantity empty o negative number")
-	ErrIdNoInteger   = errors.New("error Out of range ID")
-	ErrPrice         = errors.New("error Price empty or negative")
-	Errexirationdate = errors.New("error Expiration empty")
-	ErrName          = errors.New("error Name empty")
-	Errfield         = errors.New("error Atribute no suport type in PATCH")
-
-	ErrDatefmt    = errors.New("DATE NO FORMAT dd/mm/yyyy")
-	ErrDateDay    = errors.New("Days no valid")
-	ErrDatemouth  = errors.New("Mouth no valid")
-	ErrDateYear   = errors.New("Year no valid")
-	ErrSKUInvalid = errors.New("Error code value")
+	ErrCodeValue1      = errors.New("error Codevalue empty")
+	ErrQuantity        = errors.New("error Quantity empty o negative number")
+	ErrIdNoInteger     = errors.New("error Out of range ID")
+	ErrPrice           = errors.New("error Price empty or negative")
+	Errexirationdate   = errors.New("error Expiration empty")
+	ErrName            = errors.New("error Name empty")
+	Errfield           = errors.New("error Atribute no suport type in PATCH")
+	ErrAtributenovalid = errors.New("error id no valid")
+	ErrparamPrice      = errors.New("error Gprice no valid")
+	ErrDatefmt         = errors.New("DATE NO FORMAT dd/mm/yyyy")
+	ErrDateDay         = errors.New("Days no valid")
+	ErrDatemouth       = errors.New("Mouth no valid")
+	ErrDateYear        = errors.New("Year no valid")
+	ErrSKUInvalid      = errors.New("Error code value")
 )
 
 // este es el mapa donde equivale a struct
