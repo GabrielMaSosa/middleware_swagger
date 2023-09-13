@@ -16,9 +16,10 @@ type RepositoryImpl struct {
 }
 
 var (
-	ErrDataNotFound = errors.New("Data not found")
+	ErrInternalDataNotFound = errors.New("Data not found")
 	//para db vacias simulamos este error de abajo
-	ErrDBNotInitialize = errors.New("Fail in DB")
+	ErrDBNotInitialize   = errors.New("Fail in DB")
+	ErrInternalCodeValue = errors.New("Code Value repeat ")
 )
 
 //constructor
@@ -104,6 +105,7 @@ func (r *RepositoryImpl) PartialUpdate(id int, data map[string]interface{}) (ret
 	fmt.Println("-----------REPO----------")
 	flag := false
 	dbdata, _ := store.ReadAll("../products.json")
+
 	indice := 0
 	src := DataProductRepository{}
 	for i, v := range dbdata {
@@ -162,6 +164,10 @@ func (r *RepositoryImpl) PartialUpdate(id int, data map[string]interface{}) (ret
 			//en esta instancia ya viene validado todo no usamos el ok
 			val, _ := v.(string)
 			src.Code_value = val
+			if errm := ValidateCode_value(dbdata, val); errm != nil {
+				err = errm
+				return
+			}
 
 		case k == string(field4.Tag.Get("val")):
 			// en esta instancia ya viene validado todo no usamos el ok
@@ -246,15 +252,11 @@ func (r *RepositoryImpl) SaveNewProduct(data domain.Product) (ret *domain.Produc
 
 	dbdata, _ := store.ReadAll("../products.json")
 	indi_candidate := Returnindice(dbdata)
-
-	for _, v := range dbdata {
-
-		if data.Code_value == v.Code_value {
-			err = errors.New("code value repeat")
-			return
-		}
-
+	if erm := ValidateCode_value(dbdata, data.Code_value); erm != nil {
+		err = erm
+		return
 	}
+
 	//despues ya tengo indice
 	data.ID = indi_candidate
 	dbdata = append(dbdata, data)
@@ -274,4 +276,15 @@ func Returnindice(dta []domain.Product) (indi_candidate int) {
 	}
 	return
 
+}
+
+func ValidateCode_value(dta []domain.Product, sku string) (err error) {
+
+	for _, v := range dta {
+		if sku == v.Code_value {
+			err = ErrInternalCodeValue
+			return
+		}
+	}
+	return
 }
