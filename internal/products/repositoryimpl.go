@@ -37,6 +37,9 @@ func (r *RepositoryImpl) GetAll() (ret []domain.Product, err error) {
 
 }
 
+//	Update hace una actualizacion por id y retorna el producto
+//
+// crea de cero si no encuentra el id
 func (r *RepositoryImpl) Update(id int, data domain.Product) (ret *domain.Product, err error) {
 	fmt.Println("status repo", data)
 	fmt.Println(id)
@@ -74,6 +77,8 @@ func (r *RepositoryImpl) Update(id int, data domain.Product) (ret *domain.Produc
 	return
 }
 
+// borra producto si existe el id o y retorna el produco y un error en caso de que no encuentre
+// el id retorna nil si no encuentra
 func (r *RepositoryImpl) Delete(id int) (ret *domain.Product, err error) {
 	//se puede dar que el id del producto no sea
 	//el mismo que el id de la ubicacion por lo tanto
@@ -100,6 +105,7 @@ func (r *RepositoryImpl) Delete(id int) (ret *domain.Product, err error) {
 	return
 }
 
+// hace una actualizacion parcial del producto para el PATCH retorna el dato o un error en caso de no poder
 func (r *RepositoryImpl) PartialUpdate(id int, data map[string]interface{}) (ret *domain.Product, err error) {
 	fmt.Println("---------------------")
 	fmt.Println("-----------REPO----------")
@@ -207,6 +213,7 @@ func (r *RepositoryImpl) PartialUpdate(id int, data map[string]interface{}) (ret
 
 }
 
+// retorna un slice de producto para cuando es mayor de un precio o error
 func (r *RepositoryImpl) GetPriceMayor(price float64) (dt []domain.Product, err error) {
 	flag := false
 	dbdata, _ := store.ReadAll("../products.json")
@@ -226,6 +233,7 @@ func (r *RepositoryImpl) GetPriceMayor(price float64) (dt []domain.Product, err 
 
 }
 
+// retorna un producto por id o error si no encuentra
 func (r *RepositoryImpl) GetById(id int) (ret *domain.Product, err error) {
 	flag := false
 	dbdata, _ := store.ReadAll("../products.json")
@@ -248,6 +256,7 @@ func (r *RepositoryImpl) GetById(id int) (ret *domain.Product, err error) {
 	return
 }
 
+// crea un nuevo producto y retorna le mismo o un error
 func (r *RepositoryImpl) SaveNewProduct(data domain.Product) (ret *domain.Product, err error) {
 
 	dbdata, _ := store.ReadAll("../products.json")
